@@ -39,7 +39,7 @@ char *convert_capital(char current_char, char next_char) {
     {
         case 'Α':
             return "A";
-        case '¶':
+        case 'Ά':
             return "A'";
         case 'Β': 
             return "B";
