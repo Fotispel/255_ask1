@@ -26,13 +26,6 @@ bool is_letter(char c) {
     return (c >= '¶' && c <= 'ώ');
 }
 
-/*
-bool has_tone_and_no_umlaut(char c) {
-    return c == '¶' || c == 'ά' || c == 'Έ' || c == 'έ' || c == 'Ή' || c == 'ή' || c == 'Ί' ||
-    c == 'ί' || c == 'Ό' || c == 'ό' || c == 'Ύ' || c == 'ύ' || c == 'Ώ' || c == 'ώ';
-}
-*/
-
 
 char *convert_capital(char current_char, char next_char) {
     switch(current_char)
