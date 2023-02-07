@@ -18,6 +18,15 @@ char *get_string() {
     return str;
 }
 
+void print_string(char *str) {
+    int i = 0;
+    while (str[i] != '\0') {
+        putchar(str[i]);
+        i++;
+    }
+    printf("\n");
+}
+
 bool is_capital(char c) {
     return c == 'Α' || c == 'Β' || c == 'Γ' || c == 'Δ' || c == 'Ε' || c == 'Έ' || c == 'Ζ' || c == 'Η' || c == 'Ή' || c == 'Θ' || c == 'Ι' || c == 'Ί' || c == 'Κ' || c == 'Λ' || c == 'Μ' || c == 'Ν' || c == 'Ξ' || c == 'Ο' || c == 'Ό' || c == 'Π' || c == 'Ρ' || c == 'Σ' || c == 'Τ' || c == 'Υ' || c == 'Ύ' || c == 'Φ' || c == 'Χ' || c == 'Ψ' || c == 'Ω' || c == 'Ώ';
 }
@@ -26,13 +35,20 @@ bool is_letter(char c) {
     return (c >= '¶' && c <= 'ώ');
 }
 
+/*
+bool has_tone_and_no_umlaut(char c) {
+    return c == '¶' || c == 'ά' || c == 'Έ' || c == 'έ' || c == 'Ή' || c == 'ή' || c == 'Ί' ||
+    c == 'ί' || c == 'Ό' || c == 'ό' || c == 'Ύ' || c == 'ύ' || c == 'Ώ' || c == 'ώ';
+}
+*/
+
 
 char *convert_capital(char current_char, char next_char) {
     switch(current_char)
     {
         case 'Α':
             return "A";
-        case 'Ά':
+        case '¶':
             return "A'";
         case 'Β': 
             return "B";
@@ -234,6 +250,7 @@ int main() {
     converted_str = (char*) malloc(sizeof(char) * strlen(str));
     converted_str = conversion(str);
 
+    print_string(converted_str);
     printf("\nConverted string: %s\n", converted_str);
     
 
