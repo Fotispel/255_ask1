@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -30,15 +28,19 @@ void print_string(char *str) {
 }
 
 bool is_capital(char c) {
-    printf("%d", c);
-    return c == 'Α' || c == -74 || c == 'Β' || c == 'Γ' || c == 'Δ' || c == 'Ε' || c == 'Έ' || c == 'Ζ' || c == 'Η' || c == 'Ή' || c == 'Θ' || c == 'Ι' || c == 'Ί' || c == 'Κ' || c == 'Λ' || c == 'Μ' || c == 'Ν' || c == 'Ξ'
-    || c == 'Ο' || c == 'Ό' || c == 'Π' || c == 'Ρ' || c == 'Σ' || c == 'Τ' || c == 'Υ' || c == 'Ύ' || c == 'Φ' || c == 'Χ' || c == 'Ψ' || c == 'Ω' || c == 'Ώ';
+    return c == 'Α' || c == 'Β' || c == 'Γ' || c == 'Δ' || c == 'Ε' || c == 'Έ' || c == 'Ζ' || c == 'Η' || c == 'Ή' || c == 'Θ' || c == 'Ι' || c == 'Ί' || c == 'Κ' || c == 'Λ' || c == 'Μ' || c == 'Ν' || c == 'Ξ' || c == 'Ο' || c == 'Ό' || c == 'Π' || c == 'Ρ' || c == 'Σ' || c == 'Τ' || c == 'Υ' || c == 'Ύ' || c == 'Φ' || c == 'Χ' || c == 'Ψ' || c == 'Ω' || c == 'Ώ';
 }
 
 bool is_letter(char c) {
-    return is_capital(c) || c == 'α' || c == 'ά' || c == 'β' || c == 'γ' || c == 'δ' || c == 'ε' || c == 'έ' || c == 'ζ' || c == 'η' || c == 'ή' || c == 'θ' || c == 'ι' || c == 'ί' || c == 'ϊ' || c == 'ΐ' || c == 'κ' || c == 'λ' || c == 'μ' || c == 'ν' 
-    || c == 'ξ' || c == 'ο' || c == 'ό' || c == 'π' || c == 'ρ' || c == 'σ' || c == 'ς' || c == 'τ' || c == 'υ' || c == 'ύ' || c == 'ϋ' || c == 'ΰ' || c == 'φ' || c == 'χ' || c == 'ψ' || c == 'ω' || c == 'ώ';
+    return (c >= '¶' && c <= 'ώ');
 }
+
+/*
+bool has_tone_and_no_umlaut(char c) {
+    return c == '¶' || c == 'ά' || c == 'Έ' || c == 'έ' || c == 'Ή' || c == 'ή' || c == 'Ί' ||
+    c == 'ί' || c == 'Ό' || c == 'ό' || c == 'Ύ' || c == 'ύ' || c == 'Ώ' || c == 'ώ';
+}
+*/
 
 
 char *convert_capital(char current_char, char next_char) {
@@ -46,7 +48,7 @@ char *convert_capital(char current_char, char next_char) {
     {
         case 'Α':
             return "A";
-        case -74:
+        case '¶':
             return "A'";
         case 'Β': 
             return "B";
@@ -115,7 +117,9 @@ char *convert_capital(char current_char, char next_char) {
         default:
             return "@";
     }
-}char *convert_small_letter(char current_char,char next_char) {
+}
+
+char *convert_small_letter(char current_char,char next_char) {
     switch(current_char)
     {
         case 'α':
@@ -208,24 +212,26 @@ char *conversion(char *str)
     converted_str = (char*)malloc(2 * strlen(str) * sizeof(char));
     for (i = 0; i < strlen(str); i++)
     {
-        if (is_letter(str[i]) && is_capital(str[i]))
+        if (is_letter(str[i]))
         {
+            if (is_capital(str[i]))
+            {
                 if (str[i+1]) strcat(converted_str, convert_capital(str[i], str[i+1]));
                 else strcat(converted_str, convert_capital(str[i], ' '));
 
                 if (str[i] == 'Μ' && (str[i+1] == 'Π' || str[i+1] == 'π')) i++;
                 else if (str[i] == 'Ν' && (str[i+1] == 'Τ' || str[i+1] == 'τ')) i++;
-        }
-        if (is_letter(str[i]) && !is_capital(str[i]))
-        {
-            if (str[i+1]) strcat(converted_str, convert_small_letter(str[i], str[i+1]));
-            else strcat(converted_str, convert_small_letter(str[i], ' '));
+            }
+            else
+            {
+                if (str[i+1]) strcat(converted_str, convert_small_letter(str[i], str[i+1]));
+                else strcat(converted_str, convert_small_letter(str[i], ' '));
 
-            if (str[i] == 'μ' && (str[i+1] == 'Π' || str[i+1] == 'π')) i++;
-            else if (str[i] == 'ν' && (str[i+1] == 'Τ' || str[i+1] == 'τ')) i++;
+                if (str[i] == 'μ' && (str[i+1] == 'Π' || str[i+1] == 'π')) i++;
+                else if (str[i] == 'ν' && (str[i+1] == 'Τ' || str[i+1] == 'τ')) i++;
+            }
         }
-
-        if (!is_letter(str[i]))
+        else
         {
             strncat(converted_str, &str[i],1);
         }
@@ -237,16 +243,16 @@ char *conversion(char *str)
 int main() {
     char *str = NULL;
     char *converted_str = NULL;
-
+    setlocale(LC_ALL, "");
     str = get_string();
     printf("You entered: %s\n", str);
 
     converted_str = (char*) malloc(sizeof(char) * strlen(str));
     converted_str = conversion(str);
 
-    printf("\nConverted string: ");
     print_string(converted_str);
-
+    printf("\nConverted string: %s\n", converted_str);
+    
 
     free(str);
     return 0;
