@@ -1,251 +1,279 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <string.h>
 
-char *get_string() {
-    char c, *str = NULL;
-    int len = 0;
+/* Edo einai ta ascii ton grammaton pou tha
+ * xrisimopoiisoume stis katastaseis, oi opoies einai
+ * gia tis periptoseis
+ * nt -> d
+ * mp -> b
+ * kai gia otidipote allo (stis parapano periptoseis iparxoyn kai diaforoi
+ * sindiasmoi kefalaion kai pezon)
+ * Ta Ascii ta brika me printf("\n%d\n", c); opou c to xaraktira pou theloume
+ * */
 
-    printf("Enter a string: ");
-    while ((c = getchar()) != '\n' && c != EOF) {
-        str = (char*) realloc(str, sizeof(char) * (len + 1));
-        str[len++] = c;
+#define tonos 39
+#define dialitika 34
+
+#define M_GR 204
+#define m_GR 236
+#define N_GR 205
+#define n_GR 237
+
+#define T_GR 212
+#define t_GR 244
+
+#define P_GR 208
+#define p_GR 240
+
+#define B_ENG 66
+#define b_ENG 98
+
+#define D_ENG 68
+#define d_ENG 100
+
+
+enum state {
+    state_anything_else, state_M, state_N, state_m, state_n
+};
+
+void fill_array(char array_with_characters[256][3]) { /*arxikopoiisi pinaka metafrasis */
+    int i, j;
+    char smalls[] = "avgdezh8iklmn-oprsstyfx-w";    /*ta antistoixa peza ellinika se agglika*/
+    char capitals[] = "AVGDEZH8IKLMN-OPR-STYFX-W";  /*ta antistoixa kefalaia ellinika se agglika*/
+
+    for (i = 0; i < 256; i++) {
+        array_with_characters[i][0] = i;
+        array_with_characters[i][1] = '\0';
+        array_with_characters[i][2] = '\0';
     }
-    str = (char*) realloc(str, sizeof(char) * (len + 1));
-    str[len] = '\0';
-    return str;
-}
 
-void print_string(char *str) {
-    int i = 0;
-    while (str[i] != '\0') {
-        putchar(str[i]);
-        i++;
+    /*peza (ta peza ellinika sto Ascii einai apo 225 mexri to 249)*/
+    j = 0;
+    for (i = 225; i <= 249; i++) {
+        array_with_characters[i][0] = smalls[j];
+        j++;
     }
-    printf("\n");
+
+    /*kefalaia (ta kefalaia ellinika sto Ascii einai apo 193 mexri to 217)*/
+    j = 0;
+    for (i = 193; i <= 217; i++) {
+        array_with_characters[i][0] = capitals[j];
+        j++;
+    }
+
+    /*peza me tonous*/
+    array_with_characters[220][0] = 'a';
+    array_with_characters[220][1] = tonos;
+    array_with_characters[221][0] = 'e';
+    array_with_characters[221][1] = tonos;
+    array_with_characters[222][0] = 'h';
+    array_with_characters[222][1] = tonos;
+    array_with_characters[223][0] = 'i';
+    array_with_characters[223][1] = tonos;
+    array_with_characters[252][0] = 'o';
+    array_with_characters[252][1] = tonos;
+    array_with_characters[253][0] = 'u';
+    array_with_characters[253][1] = tonos;
+    array_with_characters[254][0] = 'w';
+    array_with_characters[254][1] = tonos;
+
+    /*kefalaia me tonous*/
+    array_with_characters[182][0] = tonos;
+    array_with_characters[182][1] = 'A';
+    array_with_characters[184][0] = tonos;
+    array_with_characters[184][1] = 'E';
+    array_with_characters[185][0] = tonos;
+    array_with_characters[185][1] = 'H';
+    array_with_characters[186][0] = tonos;
+    array_with_characters[186][1] = 'I';
+    array_with_characters[188][0] = tonos;
+    array_with_characters[188][1] = 'O';
+    array_with_characters[190][0] = tonos;
+    array_with_characters[190][1] = 'Y';
+    array_with_characters[191][0] = tonos;
+    array_with_characters[191][1] = 'W';
+
+    /*grammata me dialitika*/
+    array_with_characters[218][0] = 'I';
+    array_with_characters[218][1] = dialitika;
+    array_with_characters[219][0] = 'Y';
+    array_with_characters[219][1] = dialitika;
+    array_with_characters[250][0] = 'i';
+    array_with_characters[250][1] = dialitika;
+    array_with_characters[251][0] = 'u';
+    array_with_characters[251][1] = dialitika;
+    array_with_characters[192][0] = 'i';
+    array_with_characters[192][1] = tonos;
+    array_with_characters[192][2] = dialitika;
+    array_with_characters[224][0] = 'u';
+    array_with_characters[224][1] = tonos;
+    array_with_characters[224][2] = dialitika;
+
+    /*sindiasmoi grammaton*/
+    array_with_characters[238][0] = 'k';
+    array_with_characters[238][1] = 's'; /*einai gia to ks*/
+
+    array_with_characters[248][0] = 'p';
+    array_with_characters[248][1] = 's'; /*einai gia to ps*/
+
+    array_with_characters[206][0] = 'K';
+    array_with_characters[206][1] = 'S'; /*einai gia to KS*/
+
+    array_with_characters[216][0] = 'P';
+    array_with_characters[216][1] = 'S'; /*einai gia to PS*/
 }
 
-bool is_capital(char c) {
-    printf("%d", c);
-    return c == 'Α' || c == -74 || c == 'Β' || c == 'Γ' || c == 'Δ' || c == 'Ε' || c == 'Έ' || c == 'Ζ' || c == 'Η' || c == 'Ή' || c == 'Θ' || c == 'Ι' || c == 'Ί' || c == 'Κ' || c == 'Λ' || c == 'Μ' || c == 'Ν' || c == 'Ξ'
-    || c == 'Ο' || c == 'Ό' || c == 'Π' || c == 'Ρ' || c == 'Σ' || c == 'Τ' || c == 'Υ' || c == 'Ύ' || c == 'Φ' || c == 'Χ' || c == 'Ψ' || c == 'Ω' || c == 'Ώ';
+void print_element_from_array(int c) {  /*ektiposi xaraktira apo ton pinaka metafrasis*/
+    char array_with_characters[256][3]; /*pinakas metafrasis 256 theseon logo tou ASCII kai 3 theseis dioti
+                                        * stin xeiroteri periptosi na einai px to a'" pou einai 3 theseon*/
+
+    fill_array(array_with_characters);  /*kaloume tin fill_array gia na gemisoume ton pinaka metafrasis*/
+
+    if (array_with_characters[c][0] != '\0')    /*an i prwti thesei tou pinaka metafrasis den einai keni tote ektipwnoume*/
+        putchar(array_with_characters[c][0]);
+
+    if (array_with_characters[c][1] != '\0')    /*an i deuteri thesei tou pinaka metafrasis den einai keni tote ektipwnoume*/
+        putchar(array_with_characters[c][1]);
+
+    if (array_with_characters[c][2] != '\0')    /*an i triti thesei tou pinaka metafrasis den einai keni tote ektipwnoume*/
+        putchar(array_with_characters[c][2]);
 }
 
-bool is_letter(char c) {
-    return is_capital(c) || c == 'α' || c == 'ά' || c == 'β' || c == 'γ' || c == 'δ' || c == 'ε' || c == 'έ' || c == 'ζ' || c == 'η' || c == 'ή' || c == 'θ' || c == 'ι' || c == 'ί' || c == 'ϊ' || c == 'ΐ' || c == 'κ' || c == 'λ' || c == 'μ' || c == 'ν' 
-    || c == 'ξ' || c == 'ο' || c == 'ό' || c == 'π' || c == 'ρ' || c == 'σ' || c == 'ς' || c == 'τ' || c == 'υ' || c == 'ύ' || c == 'ϋ' || c == 'ΰ' || c == 'φ' || c == 'χ' || c == 'ψ' || c == 'ω' || c == 'ώ';
-}
-
-
-char *convert_capital(char current_char, char next_char) {
-    switch(current_char)
-    {
-        case 'Α':
-            return "A";
-        case -74:
-            return "A'";
-        case 'Β': 
-            return "B";
-        case 'Γ': 
-            return "G";
-        case 'Δ': 
-            return "D";
-        case 'Ε': 
-            return "E";
-        case 'Έ':
-            return "E'";
-        case 'Ζ':
-            return "Z";
-        case 'Η':
-            return "H";
-        case 'Ή':
-            return "H'";
-        case 'Θ':
-            return "8";
-        case 'Ι':
-            return "I";
-        case 'Ί':
-            return "I'";
-        case 'Κ':
-            return "K";
-        case 'Λ':
-            return "L";
-        case 'Μ':
-            if (next_char != 'Π' && next_char != 'π')
-                return "M";
-            else
-                return "B";
-        case 'Ν':
-            if (next_char != 'Τ' && next_char != 'τ')
-                return "N";
-            else
-                return "D";
-        case 'Ξ':
-            return "KS";
-        case 'Ο':
-            return "O";
-        case 'Ό':
-            return "O'";
-        case 'Π':
-            return "P";
-        case 'Ρ':
-            return "R";
-        case 'Σ':
-            return "S";
-        case 'Τ':
-            return "T";
-        case 'Υ':
-            return "Y";
-        case 'Ύ':
-            return "Y'";
-        case 'Φ':
-            return "F";
-        case 'Χ':
-            return "X";
-        case 'Ψ':
-            return "PS";
-        case 'Ω':
-            return "W";
-        case 'Ώ':
-            return "W'";
+enum state current_letter_is_anything_else(int c) { /*an exoume opoiodipote xaraktira ektos m kai n*/
+    switch (c) {
+        case M_GR:
+            return state_M; /*an einai M tote epistrefoume katastasi M*/
+        case m_GR:
+            return state_m; /*an einai m tote epistrefoume katastasi m*/
+        case N_GR:
+            return state_N; /*an einai N tote epistrefoume katastasi N*/
+        case n_GR:
+            return state_n; /*an einai n tote epistrefoume katastasi n*/
         default:
-            return "@";
-    }
-}char *convert_small_letter(char current_char,char next_char) {
-    switch(current_char)
-    {
-        case 'α':
-            return "a";
-        case 'ά':
-            return "a'";
-        case 'β': 
-            return "b";
-        case 'γ': 
-            return "g";
-        case 'δ': 
-            return "d";
-        case 'ε': 
-            return "e";
-        case 'έ':
-            return "e'";
-        case 'ζ':
-            return "z";
-        case 'η':
-            return "h";
-        case 'ή':
-            return "h'";
-        case 'θ':
-            return "8";
-        case 'ι':
-            return "i";
-        case 'ί':
-            return "i'";
-        case 'ϊ':
-            return "i\"";
-        case 'ΐ':
-            return "i'\"";
-        case 'κ':
-            return "k";
-        case 'λ':
-            return "l";
-        case 'μ':
-            if (next_char != 'π' && next_char != 'Π')
-                return "m";
-            else
-                return "b";
-        case 'ν':
-            if (next_char != 'τ' && next_char != 'Τ')
-                return "n";
-            else
-                return "d";
-        case 'ξ':
-            return "ks";
-        case 'ο':
-            return "o";
-        case 'ό':
-            return "o'";
-        case 'π':
-            return "p";
-        case 'ρ':
-            return "r";
-        case 'σ':
-            return "s";
-        case 'ς':
-            return "s";
-        case 'τ':
-            return "t";
-        case 'υ':
-            return "y";
-        case 'ύ':
-            return "y'";
-        case 'ϋ':
-            return "y\"";
-        case 'ΰ':
-            return "y'\"";
-        case 'φ':
-            return "f";
-        case 'χ':
-            return "x";
-        case 'ψ':
-            return "ps";
-        case 'ω':
-            return "w";
-        case 'ώ':
-            return "w'";
-        default:
-            return "!";
+            print_element_from_array(c); /*an den einai kapoia apo tis periptwseis tote typwnoume ton xaraktira*/
+            return state_anything_else;
     }
 }
 
-char *conversion(char *str)
-{
-    int i;
-    char* converted_str = NULL;
-    converted_str = (char*)malloc(2 * strlen(str) * sizeof(char));
-    for (i = 0; i < strlen(str); i++)
-    {
-        if (is_letter(str[i]) && is_capital(str[i]))
-        {
-                if (str[i+1]) strcat(converted_str, convert_capital(str[i], str[i+1]));
-                else strcat(converted_str, convert_capital(str[i], ' '));
-
-                if (str[i] == 'Μ' && (str[i+1] == 'Π' || str[i+1] == 'π')) i++;
-                else if (str[i] == 'Ν' && (str[i+1] == 'Τ' || str[i+1] == 'τ')) i++;
-        }
-        if (is_letter(str[i]) && !is_capital(str[i]))
-        {
-            if (str[i+1]) strcat(converted_str, convert_small_letter(str[i], str[i+1]));
-            else strcat(converted_str, convert_small_letter(str[i], ' '));
-
-            if (str[i] == 'μ' && (str[i+1] == 'Π' || str[i+1] == 'π')) i++;
-            else if (str[i] == 'ν' && (str[i+1] == 'Τ' || str[i+1] == 'τ')) i++;
-        }
-
-        if (!is_letter(str[i]))
-        {
-            strncat(converted_str, &str[i],1);
-        }
+enum state current_letter_is_M(int c) { /*periptwsi katastasis M*/
+    switch (c) {
+        case P_GR:  /*an einai P tote to MP ginetai B kai pame stin katastasi anything_else*/
+            print_element_from_array(B_ENG);
+            return state_anything_else;
+        case p_GR:  /*an einai p tote to mp ginetai b kai pame stin katastasi anything_else*/
+            print_element_from_array(B_ENG);
+            return state_anything_else;
+        case M_GR:  /*an einai M tote to MM ginetai M kai pame stin katastasi M*/
+            print_element_from_array(M_GR);
+            return state_M;
+        case m_GR:  /*an einai m tote exoume to mm kai ektiponoume to m kai pame stin katastasi m*/
+            print_element_from_array(M_GR);
+            return state_m;
+        case N_GR:  /*an einai N tote exoume to MN kai ektiponoume to M kai pame stin katastasi N*/
+            print_element_from_array(M_GR);
+            return state_N;
+        case n_GR:  /*an einai n tote exoume to mn kai ektiponoume to M kai pame stin katastasi n*/
+            print_element_from_array(M_GR);
+            return state_n;
+        default:    /*an den einai kapoia apo tis periptwseis tote typwnoume to M kai pame stin katastasi anything_else*/
+            print_element_from_array(M_GR);
+            print_element_from_array(c);
+            return state_anything_else;
     }
-    return converted_str;
 }
 
+
+enum state current_letter_is_N(int c) { /*periptwsi katastasis N*/
+    switch (c) {
+        case T_GR:  /*an einai T tote to NT ginetai D kai pame stin katastasi anything_else*/
+            print_element_from_array(D_ENG);
+            return state_anything_else;
+        case t_GR:  /*an einai t tote to nt ginetai d kai pame stin katastasi anything_else*/
+            print_element_from_array(D_ENG);
+            return state_anything_else;
+        case N_GR:  /*an einai N tote exoume to NN kai ektiponoume to N kai pame stin katastasi N*/
+            print_element_from_array(N_GR);
+            return state_N;
+        case n_GR:  /*an einai n tote exoume to nn kai ektiponoume to N kai pame stin katastasi n*/
+            print_element_from_array(N_GR);
+            return state_n;
+        case M_GR:  /*an einai M tote exoume to MN kai ektiponoume to N kai pame stin katastasi M*/
+            print_element_from_array(N_GR);
+            return state_M;
+        case m_GR:  /*an einai m tote exoume to mn kai ektiponoume to N kai pame stin katastasi m*/
+            print_element_from_array(N_GR);
+            return state_m;
+        default:    /*an den einai kapoia apo tis periptwseis tote typwnoume to N kai pame stin katastasi anything_else*/
+            print_element_from_array(N_GR);
+            print_element_from_array(c);
+            return state_anything_else;
+    }
+}
+
+
+enum state current_letter_is_m(int c) { /*periptwsi katastasis m*/
+    switch (c) {
+        case P_GR:  /*an einai P tote to mp ginetai b kai pame stin katastasi anything_else*/
+            print_element_from_array(b_ENG);
+            return state_anything_else;
+        case p_GR:  /*an einai p tote to mp ginetai b kai pame stin katastasi anything_else*/
+            print_element_from_array(b_ENG);
+            return state_anything_else;
+        case M_GR:  /*an einai M tote exoume to mm kai ektiponoume to m kai pame stin katastasi M*/
+            print_element_from_array(m_GR);
+            return state_M;
+        case m_GR:  /*an einai m tote exoume to mm kai ektiponoume to m kai pame stin katastasi m*/
+            print_element_from_array(m_GR);
+            return state_m;
+        case N_GR:  /*an einai N tote exoume to mn kai ektiponoume to m kai pame stin katastasi N*/
+            print_element_from_array(m_GR);
+            return state_N;
+        case n_GR:  /*an einai n tote exoume to mn kai ektiponoume to m kai pame stin katastasi n*/
+            print_element_from_array(m_GR);
+            return state_n;
+        default:    /*an den einai kapoia apo tis periptwseis tote typwnoume to m kai pame stin katastasi anything_else*/
+            print_element_from_array(m_GR);
+            print_element_from_array(c);
+            return state_anything_else;
+    }
+}
+
+enum state current_letter_is_n(int c) { /*periptwsi katastasis n*/
+    switch (c) {
+        case T_GR:  /*an einai T tote to nt ginetai d kai pame stin katastasi anything_else*/
+            print_element_from_array(d_ENG);
+            return state_anything_else;
+        case t_GR:  /*an einai t tote to nt ginetai d kai pame stin katastasi anything_else*/
+            print_element_from_array(d_ENG);
+            return state_anything_else;
+        case M_GR:  /*an einai M tote exoume to mn kai ektiponoume to n kai pame stin katastasi M*/
+            print_element_from_array(n_GR);
+            return state_M;
+        case m_GR:  /*an einai m tote exoume to mn kai ektiponoume to n kai pame stin katastasi m*/
+            print_element_from_array(n_GR);
+            return state_m;
+        case N_GR:  /*an einai N tote exoume to nn kai ektiponoume to n kai pame stin katastasi N*/
+            print_element_from_array(n_GR);
+            return state_N;
+        case n_GR:  /*an einai n tote exoume to nn kai ektiponoume to n kai pame stin katastasi n*/
+            print_element_from_array(n_GR);
+            return state_n;
+        default:    /*an den einai kapoia apo tis periptwseis tote typwnoume to n kai pame stin katastasi anything_else*/
+            print_element_from_array(n_GR);
+            print_element_from_array(c);
+            return state_anything_else;
+    }
+}
 
 int main() {
-    char *str = NULL;
-    char *converted_str = NULL;
+    int c;
+    enum state current_state = state_anything_else;
 
-    str = get_string();
-    printf("You entered: %s\n", str);
+    enum state (*transition[])(int c) = {current_letter_is_anything_else, current_letter_is_M, current_letter_is_N,
+                                     current_letter_is_m, current_letter_is_n};
 
-    converted_str = (char*) malloc(sizeof(char) * strlen(str));
-    converted_str = conversion(str);
+    while ((c = getchar()) != EOF) {
+        current_state = (transition[current_state])(c);
+    }
 
-    printf("\nConverted string: ");
-    print_string(converted_str);
-
-
-    free(str);
     return 0;
 }
